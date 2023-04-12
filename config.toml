@@ -1,0 +1,10 @@
+[simulation]
+tableWidth = 224                # cm
+tableHeight = 112               # cm
+whiteBallCoords = [56.0, 56.0]  # cm
+whiteBallVx = 200.0             # cm/s
+ballMass = 165                  # g
+ballDiameter = 5.7              # cm
+
+[files]
+staticInput = "./static.txt"
