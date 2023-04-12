@@ -62,6 +62,7 @@ public class CollisionSystem {
         }
         
         // Update simulation time
+        System.out.println(event.getTime());
         t += event.getTime();
     }
 
@@ -95,5 +96,6 @@ public class CollisionSystem {
     public boolean hasNextEvent() {
         return this.particles.size() > TABLE_HOLES;
     }
-    
+
+    public double getTime() { return t;}
 }

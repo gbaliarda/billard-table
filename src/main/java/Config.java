@@ -1,5 +1,6 @@
 import com.moandjiezana.toml.Toml;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -7,17 +8,23 @@ import java.util.List;
 public class Config {
     private static int tableWidth, tableHeight, ballMass;
     private static double whiteBallX, whiteBallY, ballDiameter;
+    private static String staticFile;
 
     static {
-        Toml toml = new Toml().read(Config.class.getResourceAsStream("config.toml"));
+        try {
+            Toml toml = new Toml().read(new File("config.toml"));
 
-        tableWidth = toml.getLong("simulation.tableWidth").intValue();
-        tableHeight = toml.getLong("simulation.tableHeight").intValue();
-        ballMass = toml.getLong("simulation.ballMass").intValue();
-        List<Object> whiteBallCords = toml.getList("simulation.whiteBallX");
-        whiteBallX = (double) whiteBallCords.get(0);
-        whiteBallY = (double) whiteBallCords.get(1);
-        ballDiameter = toml.getDouble("simulation.ballDiameter");
+            tableWidth = toml.getLong("simulation.tableWidth").intValue();
+            tableHeight = toml.getLong("simulation.tableHeight").intValue();
+            ballMass = toml.getLong("simulation.ballMass").intValue();
+            List<Object> whiteBallCords = toml.getList("simulation.whiteBallCoords");
+            whiteBallX = (double) whiteBallCords.get(0);
+            whiteBallY = (double) whiteBallCords.get(1);
+            ballDiameter = toml.getDouble("simulation.ballDiameter");
+            staticFile = toml.getString("files.staticInput");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static int getTableWidth() {
@@ -43,4 +50,6 @@ public class Config {
     public static double getBallDiameter() {
         return ballDiameter;
     }
+
+    public static String getStaticFile() { return staticFile; }
 }

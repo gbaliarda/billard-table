@@ -64,6 +64,6 @@ public class Event implements Comparable<Event> {
      * @return true if the event has been invalidated since creation, and false otherwise.
      */
     public boolean wasSuperveningEvent() {
-        return p1CollisionCount != p1.getCollisionCount() || p2CollisionCount != p2.getCollisionCount();
+        return (p1 != null && p1CollisionCount != p1.getCollisionCount()) || (p2 != null && p2CollisionCount != p2.getCollisionCount());
     }
 }
