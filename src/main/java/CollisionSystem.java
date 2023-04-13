@@ -3,14 +3,14 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class CollisionSystem {
-    private PriorityQueue<Event> pq;
-    private List<Particle> particles;
-    private int TABLE_HOLES = 6;
+    private final PriorityQueue<Event> pq;
+    private final List<Particle> particles;
+    private final int TABLE_HOLES = 6;
     private double t; // in seconds
 
     public CollisionSystem(List<Particle> particles) {
         this.particles = particles;
-        this.pq = new PriorityQueue<Event>();
+        this.pq = new PriorityQueue<>();
     }
 
     public void nextEvent() {
@@ -22,6 +22,9 @@ public class CollisionSystem {
 
         // Get the next event (least time until occurence)
         Event event = pq.poll();
+
+        logEvent(event);
+
         while (event.wasSuperveningEvent())
             event = pq.poll();
 
@@ -74,6 +77,27 @@ public class CollisionSystem {
             minEvent = new Event(tc, null, p);
 
         return minEvent;
+    }
+
+    private void logEvent(Event event) {
+        Particle p1 = event.getParticle1();
+        Particle p2 = event.getParticle2();
+
+        System.out.printf("Particles left: %d ; Time: %.2f\n", particles.size() - TABLE_HOLES, t);
+
+        System.out.printf("%s bounces with %s at ~(%.2f, %.2f)\n",
+                p1 == null ? "HW" : (p1.isFixed() ? "HOLE" : "P1"),
+                p2 == null ? "VW" : (p2.isFixed() ? "HOLE" : "P2"),
+                p1 == null ? p2.getX() : p1.getX(),
+                p1 == null ? p2.getY() : p1.getY()
+        );
+
+        if (p1 != null && p2 != null)
+            System.out.printf("Distance between centers: %.2f\n", Math.sqrt(
+                    Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2)
+            ));
+
+        System.out.println();
     }
 
     public boolean hasNextEvent() {

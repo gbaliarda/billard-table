@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +12,7 @@ public class App {
     public static void main( String[] args ) {
         try (Stream<String> stream = Files.lines(Paths.get(Config.getStaticFile()))) {
             List<Particle> particles = new ArrayList<>();
+
             stream.forEach(line -> {
                 String[] values = line.split(" ");
                 double[] doubles = new double[values.length];
@@ -28,8 +28,11 @@ public class App {
                 Particle p = new Particle(x, y, vx, vy, mass, radius, mass == 0);
                 particles.add(p);
             });
+
             updateOutputFile("output.txt", particles, 0);
+
             CollisionSystem collisionSystem = new CollisionSystem(particles);
+
             while (collisionSystem.hasNextEvent()) {
                 collisionSystem.nextEvent();
                 updateOutputFile("output.txt", particles, collisionSystem.getTime());
@@ -39,7 +42,7 @@ public class App {
         }
     }
 
-    private static void updateOutputFile(String fileName, List<Particle> particles, double time) throws IOException, IOException {
+    private static void updateOutputFile(String fileName, List<Particle> particles, double time) throws IOException {
         File file = new File(fileName);
         FileWriter fileWriter = new FileWriter(file, true);
 
