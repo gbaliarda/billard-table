@@ -47,7 +47,7 @@ public class App {
 
         stringBuilder.append(time).append("\n");
 
-        particles.forEach(particle -> stringBuilder.append(String.format(Locale.US ,"%f %f %f %f\n", particle.getX(), particle.getY(), particle.getVx(), particle.getVy())));
+        particles.forEach(particle -> stringBuilder.append(String.format(Locale.US ,"%f %f %f %f %f\n", particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getRadius())));
 
         fileWriter.write(stringBuilder.toString());
         fileWriter.close();

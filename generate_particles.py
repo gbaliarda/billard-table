@@ -27,6 +27,7 @@ def generate_static_file():
         f.write(f"{TABLE_WIDTH} {TABLE_HEIGHT} 0 0 0 {BALL_DIAMETER}\n")
 
         eps = np.random.uniform(0.02, 0.03)
+        print(eps)
 
         # Triangle balls
         # Columnas
@@ -39,7 +40,7 @@ def generate_static_file():
           initial_y = TABLE_HEIGHT / 2 + i * BALL_DIAMETER / 2
           for _ in range(i + 1):
             f.write(f"{initial_x} {initial_y} 0 0 {BALL_MASS} {BALL_DIAMETER / 2}\n")
-            initial_y = initial_y + BALL_DIAMETER  + eps
+            initial_y = initial_y - BALL_DIAMETER  - eps
             
              
             
