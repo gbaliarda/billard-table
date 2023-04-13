@@ -23,8 +23,6 @@ public class CollisionSystem {
         // Get the next event (least time until occurence)
         Event event = pq.poll();
 
-        logEvent(event);
-
         while (event.wasSuperveningEvent())
             event = pq.poll();
 
@@ -50,6 +48,8 @@ public class CollisionSystem {
         
         // Update simulation time
         t += event.getTime();
+
+        logEvent(event);
     }
 
     private Event nextParticleEvent(Particle p) {
@@ -86,8 +86,8 @@ public class CollisionSystem {
         System.out.printf("Particles left: %d ; Time: %.2f\n", particles.size() - TABLE_HOLES, t);
 
         System.out.printf("%s bounces with %s at ~(%.2f, %.2f)\n",
-                p1 == null ? "HW" : (p1.isFixed() ? "HOLE" : "P1"),
-                p2 == null ? "VW" : (p2.isFixed() ? "HOLE" : "P2"),
+                p1 == null ? "HWall" : (p1.isFixed() ? "HOLE" : p1.getColor().toUpperCase()),
+                p2 == null ? "VWall" : (p2.isFixed() ? "HOLE" : p2.getColor().toUpperCase()),
                 p1 == null ? p2.getX() : p1.getX(),
                 p1 == null ? p2.getY() : p1.getY()
         );

@@ -16,8 +16,12 @@ public class App {
             stream.forEach(line -> {
                 String[] values = line.split(" ");
                 double[] doubles = new double[values.length];
+                String color = "black";
                 for (int i = 0; i < values.length; i++) {
-                    doubles[i] = Double.parseDouble(values[i]);
+                    if (i == values.length - 1)
+                        color = values[i];
+                    else
+                        doubles[i] = Double.parseDouble(values[i]);
                 }
                 double x = doubles[0];
                 double y = doubles[1];
@@ -25,9 +29,13 @@ public class App {
                 double vy = doubles[3];
                 double mass = doubles[4];
                 double radius = doubles[5];
-                Particle p = new Particle(x, y, vx, vy, mass, radius, mass == 0);
+                Particle p = new Particle(x, y, vx, vy, mass, radius, color);
                 particles.add(p);
             });
+
+            // Delete old output
+            File file = new File("output.txt");
+            file.delete();
 
             updateOutputFile("output.txt", particles, 0);
 
@@ -50,7 +58,7 @@ public class App {
 
         stringBuilder.append(time).append("\n");
 
-        particles.forEach(particle -> stringBuilder.append(String.format(Locale.US ,"%f %f %f %f %f\n", particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getRadius())));
+        particles.forEach(particle -> stringBuilder.append(String.format(Locale.US ,"%f %f %f %f %f %s\n", particle.getX(), particle.getY(), particle.getVx(), particle.getVy(), particle.getRadius(), particle.getColor())));
 
         fileWriter.write(stringBuilder.toString());
         fileWriter.close();

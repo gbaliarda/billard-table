@@ -3,9 +3,9 @@ import java.util.Objects;
 public class Particle {
     private double x, y, vx, vy, mass, radius;
     private int collisionCount;
-    private final boolean isFixed;
+    private final String color;
 
-    public Particle(double x, double y, double vx, double vy, double mass, double radius, boolean isFixed) {
+    public Particle(double x, double y, double vx, double vy, double mass, double radius, String color) {
         this.x = x;
         this.y = y;
         this.vx = vx;
@@ -13,7 +13,7 @@ public class Particle {
         this.mass = mass;
         this.radius = radius;
         this.collisionCount = 0;
-        this.isFixed = isFixed;
+        this.color = color;
     }
 
     /**
@@ -157,7 +157,11 @@ public class Particle {
     }
 
     public boolean isFixed() {
-        return isFixed;
+        return mass == 0;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public void setVx(double vx) {

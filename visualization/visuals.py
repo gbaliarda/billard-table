@@ -20,7 +20,8 @@ for linea in lineas:
             'y': float(elementos[1]),
             'velocidad_x': float(elementos[2]),
             'velocidad_y': float(elementos[3]),
-            'radio': float(elementos[4])
+            'radio': float(elementos[4]),
+            'color': str(elementos[5])
         }
         diccionario[tiempo_actual].append(particula)
 
@@ -30,10 +31,12 @@ def update(frame):
     particulas = diccionario[tiempo]
     x = [p['x'] for p in particulas]
     y = [p['y'] for p in particulas]
-    radios = [np.pi*p['radio']*4 for p in particulas]
+    colors = [p['color'] for p in particulas]
+    radios = [np.pi*p['radio']*4 for p in particulas] # TODO: check magic numbers
 
     ax.clear()
-    ax.scatter(x, y, s=radios, edgecolors='k')
+    # Draw the table and balls, with a black outline on the balls thanks to the 'edgecolors' parameter.
+    ax.scatter(x, y, s=radios, edgecolors='k', c=colors)
     ax.set_xlim([0, 224])
     ax.set_ylim([0, 112])
     ax.set_title(f'Tiempo: {tiempo}')

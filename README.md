@@ -16,7 +16,7 @@ python generate_particles.py
 The structure of each line of `static.txt` is:
 
 ```
-x y vx vy mass radius
+x y vx vy mass radius color
 ```
 
 Where:
@@ -62,10 +62,10 @@ This will generate a file called `output.txt`, whose structure is:
 
 ```
 time_event_0
-particle_1_x, particle_1_y, particle_1_vx, particle_1_vy, particle_1_radius
-particle_2_x, particle_2_y, particle_2_vx, particle_2_vy, particle_2_radius
+particle_1_x, particle_1_y, particle_1_vx, particle_1_vy, particle_1_radius, particle_1_color
+particle_2_x, particle_2_y, particle_2_vx, particle_2_vy, particle_2_radius, particle_2_color
 ...
-particle_N_x, particle_N_y, particle_N_vx, particle_N_vy, particle_N_radius
+particle_N_x, particle_N_y, particle_N_vx, particle_N_vy, particle_N_radius, particle_N_color
 time_event_1
 ...
 ```
