@@ -1,6 +1,6 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib.collections import EllipseCollection
 
 with open("output.txt", 'r') as archivo:
     lineas = archivo.readlines()
@@ -29,20 +29,25 @@ for linea in lineas:
 def update(frame):
     tiempo = list(diccionario.keys())[frame]
     particulas = diccionario[tiempo]
+
     x = [p['x'] for p in particulas]
     y = [p['y'] for p in particulas]
     colors = [p['color'] for p in particulas]
-    radios = [np.pi*p['radio']*4 for p in particulas] # TODO: check magic numbers
+    diameters = [p['radio'] * 2 for p in particulas]
 
     ax.clear()
-    # Draw the table and balls, with a black outline on the balls thanks to the 'edgecolors' parameter.
-    ax.scatter(x, y, s=radios, edgecolors='k', c=colors)
+
+    # Create the EllipseCollection as a scatter plot, to be able to use the `diameters` array
+    # Ref: https://stackoverflow.com/questions/33094509/correct-sizing-of-markers-in-scatter-plot-to-a-radius-r-in-matplotlib
+    ax.add_collection(EllipseCollection(widths=diameters, heights=diameters, angles=0, units='xy', facecolors=colors, edgecolors='k', offsets=list(zip(x, y)), transOffset=ax.transData))
+
+    ax.set_aspect('auto')
     ax.set_xlim([0, 224])
     ax.set_ylim([0, 112])
     ax.set_title(f'Tiempo: {tiempo}')
 
 # Creación de la figura y los ejes
-fig, ax = plt.subplots(figsize=(5, 2.5))
+fig, ax = plt.subplots(figsize=(10, 5))
 
 # Creación de la animación
 anim = animation.FuncAnimation(fig, update, frames=len(diccionario))
