@@ -1,33 +1,50 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
-# Leer el archivo de texto y extraer los datos
-data = np.loadtxt('output.txt', skiprows=1, usecols=(0, 1, 2, 3, 4))
+with open("output.txt", 'r') as archivo:
+    lineas = archivo.readlines()
 
-# Extraer el tiempo de la primera línea
-# tiempo = data[0]
+diccionario = {}
+tiempo_actual = None
 
-# Extraer los datos de las partículas
-particulas = data[0:]
+for linea in lineas:
+    elementos = linea.split()
 
-# Extraer las posiciones de las partículas
-posiciones = particulas[:, :2]
+    if len(elementos) == 1:
+        tiempo_actual = float(elementos[0])
+        diccionario[tiempo_actual] = []
+    else:
+        particula = {
+            'x': float(elementos[0]),
+            'y': float(elementos[1]),
+            'velocidad_x': float(elementos[2]),
+            'velocidad_y': float(elementos[3]),
+            'radio': float(elementos[4])
+        }
+        diccionario[tiempo_actual].append(particula)
 
-# Extraer los radios de las partículas
-radios = particulas[:, -1]
-print(radios)
+# Función que se ejecuta en cada frame de la animación
+def update(frame):
+    tiempo = list(diccionario.keys())[frame]
+    particulas = diccionario[tiempo]
+    x = [p['x'] for p in particulas]
+    y = [p['y'] for p in particulas]
+    radios = [np.pi*p['radio']*4 for p in particulas]
 
-# Crear un gráfico de dispersión con las posiciones de las partículas
-fig, ax = plt.subplots()
-ax.scatter(posiciones[:, 0], posiciones[:, 1], s=np.pi * (2*radios)**2, alpha=0.5)
+    ax.clear()
+    ax.scatter(x, y, s=radios, edgecolors='k')
+    ax.set_xlim([0, 224])
+    ax.set_ylim([0, 112])
+    ax.set_title(f'Tiempo: {tiempo}')
 
-# Configurar los ejes del gráfico
-ax.set_xlim([0, 224])
-ax.set_ylim([0, 112])
-ax.set_aspect('equal')
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_title('Particulas en el tiempo t')
+# Creación de la figura y los ejes
+fig, ax = plt.subplots(figsize=(5, 2.5))
 
-# Mostrar el gráfico
-plt.show()
+# Creación de la animación
+anim = animation.FuncAnimation(fig, update, frames=len(diccionario))
+
+# Guardado de la animación como archivo mp4
+Writer = animation.writers['ffmpeg']
+writer = Writer(fps=20, metadata=dict(artist='Me'), bitrate=1800)
+anim.save('animacion.mp4', writer=writer)

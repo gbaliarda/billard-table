@@ -25,44 +25,27 @@ public class CollisionSystem {
         while (event.wasSuperveningEvent())
             event = pq.poll();
 
-        // Update particles
-        boolean didBounce = false;
-
-        Iterator<Particle> it = particles.iterator();
-
-        while (it.hasNext()) {
-            Particle p = it.next();
-
+        for (Particle p : particles) {
             if (p.isFixed()) continue;
-            
+
             // Update position
             p.setX(p.getX() + p.getVx() * event.getTime());
             p.setY(p.getY() + p.getVy() * event.getTime());
-            
-            // Update velocity or remove particle
-            if (p.equals(event.getParticle1())) {
-                if (event.getParticle2() == null)
-                    p.bounceX();
-                else if (event.getParticle2().isFixed())
-                    it.remove();
-                else if (!didBounce) {
-                    p.bounce(event.getParticle2());
-                    didBounce = true;
-                }
-            } else if (p.equals(event.getParticle2())) {
-                if (event.getParticle1() == null)
-                    p.bounceY();
-                else if (event.getParticle1().isFixed())
-                    it.remove();
-                else if (!didBounce) {
-                    p.bounce(event.getParticle1());
-                    didBounce = true;
-                }
-            }
         }
+
+        // Update velocity or remove particle
+        if (event.getParticle1() == null)
+            event.getParticle2().bounceY();
+        else if (event.getParticle2() == null)
+            event.getParticle1().bounceX();
+        else if (event.getParticle1().isFixed())
+            particles.remove(event.getParticle2());
+        else if (event.getParticle2().isFixed())
+            particles.remove(event.getParticle1());
+        else
+            event.getParticle1().bounce(event.getParticle2());
         
         // Update simulation time
-        System.out.println(event.getTime());
         t += event.getTime();
     }
 
