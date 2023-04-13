@@ -164,6 +164,10 @@ public class Particle {
         return color;
     }
 
+    public void incCollisionCount() {
+        collisionCount++;
+    }
+
     public void setVx(double vx) {
         this.vx = vx;
     }

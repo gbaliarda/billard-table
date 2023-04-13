@@ -1,5 +1,6 @@
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.PriorityQueue;
 
 public class CollisionSystem {
@@ -34,17 +35,24 @@ public class CollisionSystem {
             p.setY(p.getY() + p.getVy() * event.getTime());
         }
 
+        Particle p1 = event.getParticle1();
+        Particle p2 = event.getParticle2();
+
         // Update velocity or remove particle
-        if (event.getParticle1() == null)
-            event.getParticle2().bounceY();
-        else if (event.getParticle2() == null)
-            event.getParticle1().bounceX();
-        else if (event.getParticle1().isFixed())
-            particles.remove(event.getParticle2());
-        else if (event.getParticle2().isFixed())
-            particles.remove(event.getParticle1());
+        if (p1 == null)
+            p2.bounceY();
+        else if (p2 == null)
+            p1.bounceX();
+        else if (p1.isFixed()) {
+            particles.remove(p2);
+            p2.incCollisionCount();
+        }
+        else if (p2.isFixed()) {
+            particles.remove(p1);
+            p1.incCollisionCount();
+        }
         else
-            event.getParticle1().bounce(event.getParticle2());
+            p1.bounce(p2);
         
         // Update simulation time
         t += event.getTime();
@@ -83,7 +91,15 @@ public class CollisionSystem {
         Particle p1 = event.getParticle1();
         Particle p2 = event.getParticle2();
 
-        System.out.printf("Particles left: %d ; Time: %.2f\n", particles.size() - TABLE_HOLES, t);
+        System.out.printf("Time: %.2f\n", t);
+
+        System.out.printf("Particles left: %d ; ", particles.size() - TABLE_HOLES);
+
+        System.out.print("[ ");
+        for (Particle p : particles)
+            if (!p.isFixed())
+                System.out.printf("%s ",  p.getColor());
+        System.out.print("]\n");
 
         System.out.printf("%s bounces with %s at ~(%.2f, %.2f)\n",
                 p1 == null ? "HWall" : (p1.isFixed() ? "HOLE" : p1.getColor().toUpperCase()),
@@ -92,10 +108,10 @@ public class CollisionSystem {
                 p1 == null ? p2.getY() : p1.getY()
         );
 
-        if (p1 != null && p2 != null)
-            System.out.printf("Distance between centers: %.2f\n", Math.sqrt(
-                    Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2)
-            ));
+//        if (p1 != null && p2 != null)
+//            System.out.printf("Distance between centers: %.2f\n", Math.sqrt(
+//                    Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2)
+//            ));
 
         System.out.println();
     }
