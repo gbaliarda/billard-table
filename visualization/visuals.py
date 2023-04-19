@@ -2,38 +2,38 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.collections import EllipseCollection
 
-with open("output.txt", 'r') as archivo:
-    lineas = archivo.readlines()
+with open("output.txt", 'r') as file:
+    lines = file.readlines()
 
-diccionario = {}
-tiempo_actual = None
+events = {}
+time = None
 
-for linea in lineas:
-    elementos = linea.split()
+for line in lines:
+    data = line.split()
 
-    if len(elementos) == 1:
-        tiempo_actual = float(elementos[0])
-        diccionario[tiempo_actual] = []
+    if len(data) == 1:
+        time = float(data[0])
+        events[time] = []
     else:
-        particula = {
-            'x': float(elementos[0]),
-            'y': float(elementos[1]),
-            'velocidad_x': float(elementos[2]),
-            'velocidad_y': float(elementos[3]),
-            'radio': float(elementos[4]),
-            'color': str(elementos[5])
+        particle = {
+            'x': float(data[0]),
+            'y': float(data[1]),
+            'vx': float(data[2]),
+            'vy': float(data[3]),
+            'radius': float(data[4]),
+            'color': str(data[5])
         }
-        diccionario[tiempo_actual].append(particula)
+        events[time].append(particle)
 
-# Función que se ejecuta en cada frame de la animación
+# Update animation frame
 def update(frame):
-    tiempo = list(diccionario.keys())[frame]
-    particulas = diccionario[tiempo]
+    t = list(events.keys())[frame]
+    particles = events[t]
 
-    x = [p['x'] for p in particulas]
-    y = [p['y'] for p in particulas]
-    colors = [p['color'] for p in particulas]
-    diameters = [p['radio'] * 2 for p in particulas]
+    x = [p['x'] for p in particles]
+    y = [p['y'] for p in particles]
+    colors = [p['color'] for p in particles]
+    diameters = [p['radius'] * 2 for p in particles]
 
     ax.clear()
 
@@ -44,15 +44,16 @@ def update(frame):
     ax.set_aspect('auto')
     ax.set_xlim([0, 224])
     ax.set_ylim([0, 112])
-    ax.set_title(f'Tiempo: {tiempo}')
+    ax.set_title(f'Time: {t}')
 
-# Creación de la figura y los ejes
+# Create figure and axes
 fig, ax = plt.subplots(figsize=(10, 5))
 
-# Creación de la animación
-anim = animation.FuncAnimation(fig, update, frames=len(diccionario))
+# Create animation
+anim = animation.FuncAnimation(fig, update, frames=len(events))
 
-# Guardado de la animación como archivo mp4
+# Save animation as mp4
 Writer = animation.writers['ffmpeg']
 writer = Writer(fps=20, metadata=dict(artist='Me'), bitrate=1800)
-anim.save('animacion.mp4', writer=writer)
+
+anim.save('animation.mp4', writer=writer)
