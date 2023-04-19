@@ -2,6 +2,7 @@
 *.txt
 *.mp4
 target/
+out/
 
 media/
 __pycache__/

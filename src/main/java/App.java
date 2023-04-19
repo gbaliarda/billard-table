@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +11,21 @@ import java.util.stream.Stream;
 
 public class App {
     public static void main( String[] args ) {
+        Path filePath = Paths.get(Config.getOutputFile());
+
+        try {
+            // Create any non-existent directories in th output path
+            Files.createDirectories(filePath.getParent());
+            // Delete old output file
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         try (Stream<String> stream = Files.lines(Paths.get(Config.getStaticFile()))) {
             List<Particle> particles = new ArrayList<>();
 
+            // Load static inputs
             stream.forEach(line -> {
                 String[] values = line.split(" ");
                 double[] doubles = new double[values.length];
@@ -33,25 +46,22 @@ public class App {
                 particles.add(p);
             });
 
-            // Delete old output
-            File file = new File("output.txt");
-            file.delete();
-
-            updateOutputFile("output.txt", particles, 0);
+            updateOutputFile(particles, 0);
 
             CollisionSystem collisionSystem = new CollisionSystem(particles);
 
+            // Run the simulation
             while (collisionSystem.hasNextEvent()) {
                 collisionSystem.nextEvent();
-                updateOutputFile("output.txt", particles, collisionSystem.getTime());
+                updateOutputFile(particles, collisionSystem.getTime());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void updateOutputFile(String fileName, List<Particle> particles, double time) throws IOException {
-        File file = new File(fileName);
+    private static void updateOutputFile(List<Particle> particles, double time) throws IOException {
+        File file = new File(Config.getOutputFile());
         FileWriter fileWriter = new FileWriter(file, true);
 
         StringBuilder stringBuilder = new StringBuilder();

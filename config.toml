@@ -8,3 +8,4 @@ ballDiameter = 5.7              # cm
 
 [files]
 staticInput = "./static.txt"
+output = "./out/output.txt"
