@@ -42,6 +42,12 @@ ballDiameter = 5.7              # cm
 [files]
 staticInput = "./static.txt"
 output = "./out/output.txt"
+
+[benchmarks]
+whiteBallYRange = [42, 56]
+initialPositions = 3
+initialVelocities = 10
+rounds = 5
 ```
 
 Note that `whiteBallCoords`, `whiteBallVx` and `ballDiameter` **must** have decimal point.
@@ -78,6 +84,14 @@ To run the animations based on the simulation output, execute from the root fold
 
 ```shell
 python visualization/visuals.py
+```
+
+# Run Benchmarks
+
+To run the benchmarks for different `y` coordinates of the white ball, execute from the root folder:
+
+```shell
+python benchmarks/times.py
 ```
 
 # Authors
