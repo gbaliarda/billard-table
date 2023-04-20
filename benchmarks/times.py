@@ -9,6 +9,7 @@ def main() -> None:
     config = toml.load(f)
 
   initialPositions = config["benchmarks"]["initialPositions"]
+  rounds = config["benchmarks"]["rounds"]
   whiteBallYRange = config["benchmarks"]["whiteBallYRange"]
   step = (whiteBallYRange[1] - whiteBallYRange[0]) / (initialPositions - 1)
 
@@ -27,7 +28,7 @@ def main() -> None:
     # Save the times of each round for the current `y`
     times[current_y] = {}
 
-    for j in range(config["benchmarks"]["rounds"]):    
+    for j in range(rounds):    
       # Create particles
       subprocess.run(["python", "generate_particles.py"])
 
@@ -47,27 +48,30 @@ def main() -> None:
           time = float(data[0])
           times[current_y][j].append(time)
 
-  # Plot mean time between events
-  plot_end_times(times, step, config)
+  # Plot mean time until completion
+  plot_end_times(times, rounds)
 
-  # TODO: plot mean time until completion
+  # TODO: add plot varying white ball `vx` instead of `y`
+
+  # Plot mean time between events
+  plot_times_between_events(times, rounds)
   
   # Plot histogram (number of events in each time bin)
-  plot_histogram(times, config["benchmarks"]["rounds"])
+  plot_histogram(times, rounds)
 
 
-def plot_end_times(times: dict[float, dict[int, float]], step: float, config: dict):
+def plot_end_times(times: dict[float, dict[int, float]], rounds: int):
   # `y` coordinates of the white ball
-  x_values = [y for y in times.keys()]
+  x_values = []
   # Average end times for each `y`
   y_values = []
   errors = []
 
-  for i in range(config["benchmarks"]["initialPositions"]):
-    y = config["benchmarks"]["whiteBallYRange"][0] + step * i
+  for y in times.keys():
+    x_values.append(y)
 
     # End times of each round for the current `y`
-    end_times = [times[y][j][-1] for j in range(config["benchmarks"]["rounds"])]
+    end_times = [times[y][j][-1] for j in range(rounds)]
 
     avg_end_time = np.mean(end_times)
     std_end_time = np.std(end_times)
@@ -84,10 +88,46 @@ def plot_end_times(times: dict[float, dict[int, float]], step: float, config: di
   plt.xlabel("Coordenada `y` bola blanca (cm)", fontsize=18)
   plt.ylabel("Tiempo de finalización (s)", fontsize=18)
 
+  plt.grid()
   plt.savefig("out/end_times.png")
 
   plt.close()
 
+
+def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int):
+  # `y` coordinates of the white ball
+  x_values = []
+  # Average end times for each `y`
+  y_values = []
+  errors = []
+
+  for y in times.keys():
+    x_values.append(y)
+    aux = []
+
+    for j in range(rounds):
+      # Get the time span between each pair of events
+      time_spans = [times[y][j][i + 1] - times[y][j][i] for i in range(len(times[y][j]) - 1)]
+      aux += time_spans
+    
+    avg_time_span = np.mean(aux)
+    std_time_span = np.std(aux)
+
+    y_values.append(avg_time_span)
+    errors.append(std_time_span)
+
+  plt.bar(x_values, y_values, yerr=errors, capsize=5)
+
+  # TODO: add another plot bar with the event frequency (i.e. 1 / time between events)
+
+  plt.xlabel("Coordenada `y` bola blanca (cm)", fontsize=18)
+  plt.ylabel("Tiempo entre eventos (s)", fontsize=18)
+
+  plt.grid()
+  plt.savefig("out/time_between_events.png")
+
+  plt.close()
+  
 
 def plot_histogram(times: dict[float, dict[int, float]], rounds: int):
   bins = [0, 5, 10, 15, 20, 40, 60, 80, 100, 300]
