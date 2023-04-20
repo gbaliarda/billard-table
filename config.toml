@@ -1,11 +1,18 @@
 [simulation]
-tableWidth = 224                # cm
-tableHeight = 112               # cm
-whiteBallCoords = [56.0, 56.0]  # cm
-whiteBallVx = 200.0             # cm/s
-ballMass = 165                  # g
-ballDiameter = 5.7              # cm
+tableWidth = 224
+tableHeight = 112
+whiteBallCoords = [ 56.0, 56.0,]
+whiteBallVx = 200.0
+ballMass = 165
+ballDiameter = 5.7
+verbose = false
 
 [files]
 staticInput = "./static.txt"
 output = "./out/output.txt"
+
+[benchmarks]
+whiteBallYRange = [ 42, 56,]
+initialPositions = 3
+initialVelocities = 10
+rounds = 5

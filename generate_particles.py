@@ -27,7 +27,6 @@ def generate_static_file():
         f.write(f"{TABLE_WIDTH} {TABLE_HEIGHT} 0 0 0 {BALL_DIAMETER} gray\n")
 
         eps = np.random.uniform(0.02, 0.03)
-        print(f"{eps=}")
 
         # Triangle balls
         colors = ['yellow', 'blue', 'red', 'purple', 'orange', 'green',

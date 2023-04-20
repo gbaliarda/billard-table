@@ -7,6 +7,7 @@ import java.util.List;
 
 public class Config {
     private static int tableWidth, tableHeight;
+    private static boolean verbose;
     private static String staticFile, outputFile;
 
     static {
@@ -15,6 +16,7 @@ public class Config {
 
             tableWidth = toml.getLong("simulation.tableWidth").intValue();
             tableHeight = toml.getLong("simulation.tableHeight").intValue();
+            verbose = toml.getBoolean("simulation.verbose");
             staticFile = toml.getString("files.staticInput");
             outputFile = toml.getString("files.output");
         } catch (Exception e) {
@@ -28,6 +30,10 @@ public class Config {
 
     public static int getTableHeight() {
         return tableHeight;
+    }
+
+    public static boolean isVerbose() {
+        return verbose;
     }
 
     public static String getStaticFile() { return staticFile; }

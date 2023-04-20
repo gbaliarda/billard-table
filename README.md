@@ -3,6 +3,7 @@
 - python >= 3.10
   - numpy
   - matplotlib
+  - toml
 - java >= 11
 
 # Input Generation
@@ -40,6 +41,7 @@ ballDiameter = 5.7              # cm
 
 [files]
 staticInput = "./static.txt"
+output = "./out/output.txt"
 ```
 
 Note that `whiteBallCoords`, `whiteBallVx` and `ballDiameter` **must** have decimal point.

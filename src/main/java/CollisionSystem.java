@@ -88,6 +88,9 @@ public class CollisionSystem {
     }
 
     private void logEvent(Event event) {
+        if (!Config.isVerbose())
+            return;
+        
         Particle p1 = event.getParticle1();
         Particle p2 = event.getParticle2();
 
