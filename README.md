@@ -63,7 +63,7 @@ mvn clean package
 In order to run the simulation run:
 
 ```shell
-java -jar ./target/billboard-table-1.0-jar-with-dependencies.jar
+java -jar ./target/billard-table-1.0-jar-with-dependencies.jar
 ```
 
 This will generate a file called `output.txt`, whose structure is:

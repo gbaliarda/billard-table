@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ar.edu.itba.ss</groupId>
-  <artifactId>billboard-table</artifactId>
+  <artifactId>billard-table</artifactId>
   <version>1.0</version>
 
-  <name>billboard-table</name>
+  <name>billard-table</name>
 
   <build>
     <plugins>
