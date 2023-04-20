@@ -46,10 +46,25 @@ def main() -> None:
         if len(data) == 1:
           time = float(data[0])
           times[current_y][j].append(time)
-    
-  # Plot the results
-  for i in range(initialPositions):
-    y = whiteBallYRange[0] + step * i
+
+  # Plot mean time between events
+  plot_end_times(times, step, config)
+
+  # TODO: plot mean time until completion
+  
+  # Plot histogram (number of events in each time bin)
+  plot_histogram(times, config["benchmarks"]["rounds"])
+
+
+def plot_end_times(times: dict[float, dict[int, float]], step: float, config: dict):
+  # `y` coordinates of the white ball
+  x_values = [y for y in times.keys()]
+  # Average end times for each `y`
+  y_values = []
+  errors = []
+
+  for i in range(config["benchmarks"]["initialPositions"]):
+    y = config["benchmarks"]["whiteBallYRange"][0] + step * i
 
     # End times of each round for the current `y`
     end_times = [times[y][j][-1] for j in range(config["benchmarks"]["rounds"])]
@@ -57,11 +72,21 @@ def main() -> None:
     avg_end_time = np.mean(end_times)
     std_end_time = np.std(end_times)
 
-    print()
-    print(f"Time to complete at {y=} = {avg_end_time} +- {std_end_time}")
-    print(f"End times: {[t for t in end_times]}")
-  
-  plot_histogram(times, config["benchmarks"]["rounds"])
+    y_values.append(avg_end_time)
+    errors.append(std_end_time)
+
+    # print()
+    # print(f"Time to complete at {y=} = {avg_end_time} +- {std_end_time}")
+    # print(f"End times: {[t for t in end_times]}")
+
+  plt.bar(x_values, y_values, yerr=errors, capsize=5)
+
+  plt.xlabel("Coordenada `y` bola blanca (cm)", fontsize=18)
+  plt.ylabel("Tiempo de finalización (s)", fontsize=18)
+
+  plt.savefig("out/end_times.png")
+
+  plt.close()
 
 
 def plot_histogram(times: dict[float, dict[int, float]], rounds: int):
