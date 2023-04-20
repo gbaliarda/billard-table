@@ -70,6 +70,7 @@ def plot_histogram(times: dict[float, dict[int, float]], rounds: int):
   # Go through all the `y` values of the white ball, and draw a histogram for each one
   for y in times.keys():
     data = []
+    errors = []
 
     # Get the number of times less than or equal to each bin
     for i in range(1, len(bins)):
@@ -82,10 +83,16 @@ def plot_histogram(times: dict[float, dict[int, float]], rounds: int):
       
       # Add random events to the data, to populate the bins according to the number of events in each bin
       data += [bins[i] - 1] * int(round(np.mean(events_in_bin), 0))
+      errors.append(np.std(events_in_bin))
 
     # Create a histogram
     _, ax = plt.subplots(figsize=(16, 6))
-    _, bins, _ = ax.hist(data, bins=bins, edgecolor='black')
+    n, bins, _ = ax.hist(data, bins=bins, edgecolor='black')
+
+    # Add error bars (std) to the histogram
+    bin_centers = 0.5 * (bins[:-1] + bins[1:])
+    bin_widths = bins[1:] - bins[:-1]
+    ax.errorbar(bin_centers, n, yerr=errors, xerr=bin_widths/2, fmt='none', ecolor='black', capsize=5)
 
     xticks = [0, 5, 10, 15, 20, 60, 100, 300]
     xticklabels = ['0', '', '10', '', '20', '60', '100', '300']
@@ -96,7 +103,7 @@ def plot_histogram(times: dict[float, dict[int, float]], rounds: int):
 
     # Set the y-axis label
     ax.set_ylabel('Eventos', fontsize=20)
-    ax.set_ylim(0, 150)
+    ax.set_ylim(0, 200)
 
     # Show the plot
     plt.savefig(f"out/hist_{y}.png")
