@@ -2,6 +2,7 @@ import toml
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 def main() -> None:
   # Load config
@@ -75,7 +76,7 @@ def plot_end_times(times: dict[float, dict[int, float]], rounds: int):
     std_end_time = np.std(end_times)
 
     y_values.append(avg_end_time)
-    errors.append(std_end_time)
+    errors.append(std_end_time / math.sqrt(rounds)) # use the Standard Error of the Mean (SEM)
 
   plt.bar(x_values, y_values, width=15, yerr=errors, capsize=5)
 

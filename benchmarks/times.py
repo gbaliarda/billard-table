@@ -2,6 +2,7 @@ import toml
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 def main() -> None:
   # Load config
@@ -75,7 +76,7 @@ def plot_end_times(times: dict[float, dict[int, float]], rounds: int):
     std_end_time = np.std(end_times)
 
     y_values.append(avg_end_time)
-    errors.append(std_end_time)
+    errors.append(std_end_time / math.sqrt(len(end_times))) # use the Standard Error of the Mean (SEM)
 
     # print()
     # print(f"Time to complete at {y=} = {avg_end_time} +- {std_end_time}")
@@ -112,7 +113,7 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
     std_time_span = np.std(time_spans)
 
     y_values.append(avg_time_span)
-    errors.append(std_time_span)
+    errors.append(std_time_span / math.sqrt(len(time_spans))) # use the Standard Error of the Mean (SEM)
   
     # Plot the PDF of the times between events
     bins = np.array([1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100])
@@ -146,8 +147,8 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
   plt.savefig("out/mean_time_events.png")
   plt.close()
 
-  # Plot frequency of events
-  plt.bar(x_values, [1/y for y in y_values], yerr=[1/e for e in errors], capsize=5)
+  # Plot frequency of events (use STD to get the error)
+  plt.bar(x_values, [1/y for y in y_values], yerr=[1/(e * math.sqrt(len(time_spans))) for e in errors], capsize=5)
 
   plt.xlabel("Coordenada `y` bola blanca (cm)", fontsize=20)
   plt.ylabel("Frecuencia de eventos (1/s)", fontsize=20)
