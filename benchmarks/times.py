@@ -116,15 +116,25 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
     y_values.append(avg_time_span)
     errors.append(std_time_span)
 
-  plt.bar(x_values, y_values, yerr=errors, capsize=5)
+  _, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
-  # TODO: add another plot bar with the event frequency (i.e. 1 / time between events)
+  # Plot mean time between events
+  ax1.bar(x_values, y_values, yerr=errors, capsize=5)
 
-  plt.xlabel("Coordenada `y` bola blanca (cm)", fontsize=18)
-  plt.ylabel("Tiempo entre eventos (s)", fontsize=18)
+  ax1.set_xlabel("Coordenada `y` bola blanca (cm)", fontsize=20)
+  ax1.set_ylabel("Tiempo entre eventos (s)", fontsize=20)
 
-  plt.grid()
-  plt.savefig("out/time_between_events.png")
+  ax1.grid()
+
+  # Plot frequency of events
+  ax2.bar(x_values, [1/y for y in y_values], yerr=[1/e for e in errors], capsize=5)
+
+  ax2.set_xlabel("Coordenada `y` bola blanca (cm)", fontsize=20)
+  ax2.set_ylabel("Frecuencia de eventos (1/s)", fontsize=20)
+
+  ax2.grid()
+  
+  plt.savefig("out/times_and_freqsset_.png")
 
   plt.close()
   
