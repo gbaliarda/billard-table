@@ -54,8 +54,8 @@ def main() -> None:
   # Plot mean time between events
   plot_times_between_events(times, rounds)
   
-  # Plot histogram (number of events in each time bin)
-  plot_histogram(times, rounds)
+  # Probability Density Function of events along time
+  plot_event_density(times, rounds)
 
 
 def plot_end_times(times: dict[float, dict[int, float]], rounds: int):
@@ -101,20 +101,39 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
 
   for y in times.keys():
     x_values.append(y)
-    aux = []
+    time_spans = []
 
     for j in range(rounds):
       # Get the time span between each pair of events
-      time_spans = [times[y][j][i + 1] - times[y][j][i] for i in range(len(times[y][j]) - 1)]
-      aux += time_spans
+      aux = [times[y][j][i + 1] - times[y][j][i] for i in range(len(times[y][j]) - 1)]
+      time_spans += aux
     
-    avg_time_span = np.mean(aux)
-    std_time_span = np.std(aux)
+    avg_time_span = np.mean(time_spans)
+    std_time_span = np.std(time_spans)
 
     y_values.append(avg_time_span)
     errors.append(std_time_span)
   
-  # TODO: add graph to show the PDF of the times between events
+    # Plot the PDF of the times between events
+    bins = np.array([1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100])
+    counts = []
+
+    for i in range(1, len(bins)):
+      # Get the number of events in the current round that are less than or equal to the current bin
+      event_count = len([ts for ts in time_spans if ts <= bins[i] and ts > bins[i - 1]])
+      counts.append(event_count)
+    
+    # Plot the Probability Density Function of the times between events
+    density = counts / (sum(counts) * np.diff(bins))
+    bin_centers = 0.5 * (bins[:-1] + bins[1:])
+    plt.loglog(bin_centers, density, "-", label=f"y={y}", alpha=0.8)
+
+  plt.xlabel('Tiempo entre eventos (s)', fontsize=20)
+  plt.ylabel('Densidad de probabilidad de eventos', fontsize=18)
+  plt.grid()
+  plt.legend()
+  plt.savefig(f"out/time_events_density.png")
+  plt.close()
 
   # Plot mean time between events
   plt.bar(x_values, y_values, yerr=errors, capsize=5)
@@ -139,15 +158,15 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
   plt.close()
   
 
-def plot_histogram(times: dict[float, dict[int, float]], rounds: int):
+def plot_event_density(times: dict[float, dict[int, float]], rounds: int):
   bins = np.array([0, 2, 4, 6, 8, 10, 15, 20, 40, 60, 80])
 
   _, ax = plt.subplots(figsize=(16, 6))
 
   # Go through all the `y` values of the white ball, and draw a histogram for each one
   for y in times.keys():
-    data = []
-    errors = []
+    # data = []
+    # errors = []
     counts = []
 
     # Get the number of times less than or equal to each bin
@@ -162,8 +181,8 @@ def plot_histogram(times: dict[float, dict[int, float]], rounds: int):
       # Add random events to the data, to populate the bins according to the number of events in each bin
       event_count = int(round(np.mean(events_in_bin), 0))
       counts.append(event_count)
-      data += [bins[i] - 1] * event_count
-      errors.append(np.std(events_in_bin))
+      # data += [bins[i] - 1] * event_count
+      # errors.append(np.std(events_in_bin))
 
     # Plot a histogram
     # _, bins, _ = ax.hist(data, bins=bins, edgecolor='black')
