@@ -51,8 +51,6 @@ def main() -> None:
   # Plot mean time until completion
   plot_end_times(times, rounds)
 
-  # TODO: add plot varying white ball `vx` instead of `y`
-
   # Plot mean time between events
   plot_times_between_events(times, rounds)
   

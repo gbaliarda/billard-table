@@ -45,7 +45,8 @@ output = "./out/output.txt"
 
 [benchmarks]
 whiteBallYRange = [42, 56]
-initialPositions = 3
+whiteBallVxRange = [100, 300]
+initialPositions = 10
 initialVelocities = 10
 rounds = 5
 ```
@@ -92,6 +93,12 @@ To run the benchmarks for different `y` coordinates of the white ball, execute f
 
 ```shell
 python benchmarks/times.py
+```
+
+To run the benchmarks for different `vx` velocities of the white ball:
+
+```shell
+python benchmarks/vx_times.py
 ```
 
 # Authors
