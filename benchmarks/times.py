@@ -113,37 +113,42 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
 
     y_values.append(avg_time_span)
     errors.append(std_time_span)
-
-  _, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+  
+  # TODO: add graph to show the PDF of the times between events
 
   # Plot mean time between events
-  ax1.bar(x_values, y_values, yerr=errors, capsize=5)
+  plt.bar(x_values, y_values, yerr=errors, capsize=5)
 
-  ax1.set_xlabel("Coordenada `y` bola blanca (cm)", fontsize=20)
-  ax1.set_ylabel("Tiempo entre eventos (s)", fontsize=20)
+  plt.xlabel("Coordenada `y` bola blanca (cm)", fontsize=20)
+  plt.ylabel("Tiempo entre eventos (s)", fontsize=20)
 
-  ax1.grid()
+  plt.grid()
+
+  plt.savefig("out/mean_time_events.png")
+  plt.close()
 
   # Plot frequency of events
-  ax2.bar(x_values, [1/y for y in y_values], yerr=[1/e for e in errors], capsize=5)
+  plt.bar(x_values, [1/y for y in y_values], yerr=[1/e for e in errors], capsize=5)
 
-  ax2.set_xlabel("Coordenada `y` bola blanca (cm)", fontsize=20)
-  ax2.set_ylabel("Frecuencia de eventos (1/s)", fontsize=20)
+  plt.xlabel("Coordenada `y` bola blanca (cm)", fontsize=20)
+  plt.ylabel("Frecuencia de eventos (1/s)", fontsize=20)
 
-  ax2.grid()
+  plt.grid()
   
-  plt.savefig("out/times_and_freqsset_.png")
-
+  plt.savefig("out/mean_freqs_events.png")
   plt.close()
   
 
 def plot_histogram(times: dict[float, dict[int, float]], rounds: int):
-  bins = [0, 5, 10, 15, 20, 40, 60, 80, 100, 300]
+  bins = np.array([0, 2, 4, 6, 8, 10, 15, 20, 40, 60, 80])
+
+  _, ax = plt.subplots(figsize=(16, 6))
 
   # Go through all the `y` values of the white ball, and draw a histogram for each one
   for y in times.keys():
     data = []
     errors = []
+    counts = []
 
     # Get the number of times less than or equal to each bin
     for i in range(1, len(bins)):
@@ -155,33 +160,38 @@ def plot_histogram(times: dict[float, dict[int, float]], rounds: int):
         events_in_bin.append(event_amt)
       
       # Add random events to the data, to populate the bins according to the number of events in each bin
-      data += [bins[i] - 1] * int(round(np.mean(events_in_bin), 0))
+      event_count = int(round(np.mean(events_in_bin), 0))
+      counts.append(event_count)
+      data += [bins[i] - 1] * event_count
       errors.append(np.std(events_in_bin))
 
-    # Create a histogram
-    _, ax = plt.subplots(figsize=(16, 6))
-    n, bins, _ = ax.hist(data, bins=bins, edgecolor='black')
+    # Plot a histogram
+    # _, bins, _ = ax.hist(data, bins=bins, edgecolor='black')
 
-    # Add error bars (std) to the histogram
+    # Plot the histogram as a Probability Density Function
+    density = counts / (sum(counts) * np.diff(bins))
     bin_centers = 0.5 * (bins[:-1] + bins[1:])
-    bin_widths = bins[1:] - bins[:-1]
-    ax.errorbar(bin_centers, n, yerr=errors, xerr=bin_widths/2, fmt='none', ecolor='black', capsize=5)
+    ax.plot(bin_centers, density, "-", label=f"y={y}", alpha=0.8)
 
-    xticks = [0, 5, 10, 15, 20, 60, 100, 300]
-    xticklabels = ['0', '', '10', '', '20', '60', '100', '300']
-    ax.set_xticks(xticks, xticklabels)
+  xticks = [0, 5, 10, 15, 20, 60, 80]
+  xticklabels = ['0', '5', '10', '', '20', '60', '80']
+  ax.set_xticks(xticks, xticklabels)
 
-    # Set the x-axis label
-    ax.set_xlabel('Tiempo (s)', fontsize=20)
+  # Set the x-axis label
+  ax.set_xlabel('Tiempo (s)', fontsize=20)
 
-    # Set the y-axis label
-    ax.set_ylabel('Eventos', fontsize=20)
-    ax.set_ylim(0, 200)
+  # Set the y-axis label
+  ax.set_ylabel('Densidad de probabilidad de eventos', fontsize=18)
+  # ax.set_ylim(0, 200)
 
-    # Show the plot
-    plt.savefig(f"out/hist_{y}.png")
+  # Enable grid and labels
+  ax.grid()
+  ax.legend()
 
-    plt.close()
+  # Save the plot
+  plt.savefig(f"out/event_density.png")
+
+  plt.close()
 
 
 if __name__ == "__main__":
