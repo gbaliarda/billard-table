@@ -123,6 +123,7 @@ public class Particle {
         b.setVy(b.getVy() - jy / b.getMass());
 
         this.collisionCount++;
+        b.collisionCount++;
     }
 
     /**
