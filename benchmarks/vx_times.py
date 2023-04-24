@@ -34,7 +34,7 @@ def main() -> None:
       subprocess.run(["python", "generate_particles.py"])
 
       # Run simulation
-      subprocess.run(["java", "-jar", "./target/billboard-table-1.0-jar-with-dependencies.jar"])
+      subprocess.run(["java", "-jar", "./target/billard-table-1.0-jar-with-dependencies.jar"])
 
       # Save event times
       with open(config["files"]["output"], 'r') as file:
@@ -47,6 +47,11 @@ def main() -> None:
 
         if len(data) == 1:
           time = float(data[0])
+
+          if time > 500:
+            times[current_vx][j] = None # outlier
+            break
+          
           times[current_vx][j].append(time)
 
   # Plot mean time until completion
@@ -70,13 +75,22 @@ def plot_end_times(times: dict[float, dict[int, float]], rounds: int):
     x_values.append(vx)
 
     # End times of each round for the current `vx`
-    end_times = [times[vx][j][-1] for j in range(rounds)]
+
+    end_times = []
+
+    for j in range(rounds):
+      if times[vx][j] != None: # discard outliers
+        end_times.append(times[vx][j][-1])
 
     avg_end_time = np.mean(end_times)
     std_end_time = np.std(end_times)
 
+    print()
+    print(f"Time to complete at {vx=} = {avg_end_time} +- {std_end_time}")
+    print(f"End times: {[t for t in end_times]}")
+
     y_values.append(avg_end_time)
-    errors.append(std_end_time / math.sqrt(rounds)) # use the Standard Error of the Mean (SEM)
+    errors.append(std_end_time / math.sqrt(len(end_times))) # use the Standard Error of the Mean (SEM)
 
   plt.bar(x_values, y_values, width=15, yerr=errors, capsize=5)
 
@@ -84,6 +98,7 @@ def plot_end_times(times: dict[float, dict[int, float]], rounds: int):
   plt.ylabel("Tiempo de finalización (s)", fontsize=18)
 
   plt.grid()
+  plt.tight_layout()
   plt.savefig("out/end_times_vx.png")
 
   plt.close()

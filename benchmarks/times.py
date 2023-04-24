@@ -34,7 +34,7 @@ def main() -> None:
       subprocess.run(["python", "generate_particles.py"])
 
       # Run simulation
-      subprocess.run(["java", "-jar", "./target/billboard-table-1.0-jar-with-dependencies.jar"])
+      subprocess.run(["java", "-jar", "./target/billard-table-1.0-jar-with-dependencies.jar"])
 
       # Save event times
       with open(config["files"]["output"], 'r') as file:
@@ -47,6 +47,11 @@ def main() -> None:
 
         if len(data) == 1:
           time = float(data[0])
+
+          if time > 500:
+            times[current_y][j] = None # outlier
+            break
+
           times[current_y][j].append(time)
 
   # Plot mean time until completion
@@ -70,7 +75,11 @@ def plot_end_times(times: dict[float, dict[int, float]], rounds: int):
     x_values.append(y)
 
     # End times of each round for the current `y`
-    end_times = [times[y][j][-1] for j in range(rounds)]
+    end_times = []
+
+    for j in range(rounds):
+      if times[y][j] != None: # discard outliers
+        end_times.append(times[y][j][-1])
 
     avg_end_time = np.mean(end_times)
     std_end_time = np.std(end_times)
@@ -88,6 +97,8 @@ def plot_end_times(times: dict[float, dict[int, float]], rounds: int):
   plt.ylabel("Tiempo de finalización (s)", fontsize=18)
 
   plt.grid()
+  plt.tight_layout()
+  
   plt.savefig("out/end_times.png")
 
   plt.close()
@@ -105,9 +116,10 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
     time_spans = []
 
     for j in range(rounds):
-      # Get the time span between each pair of events
-      aux = [times[y][j][i + 1] - times[y][j][i] for i in range(len(times[y][j]) - 1)]
-      time_spans += aux
+      if times[y][j] != None: # discard outliers
+        # Get the time span between each pair of events
+        aux = [times[y][j][i + 1] - times[y][j][i] for i in range(len(times[y][j]) - 1)]
+        time_spans += aux
     
     avg_time_span = np.mean(time_spans)
     std_time_span = np.std(time_spans)
@@ -129,7 +141,7 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
     bin_centers = 0.5 * (bins[:-1] + bins[1:])
     plt.loglog(bin_centers, density, "-", label=f"y={y}", alpha=0.8)
 
-  plt.xlabel('Tiempo entre eventos (s)', fontsize=20)
+  plt.xlabel('Tiempo entre eventos (s)', fontsize=18)
   plt.ylabel('Densidad de probabilidad de eventos', fontsize=18)
   plt.grid()
   plt.legend()
@@ -143,6 +155,7 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
   plt.ylabel("Tiempo entre eventos (s)", fontsize=20)
 
   plt.grid()
+  plt.tight_layout()
 
   plt.savefig("out/mean_time_events.png")
   plt.close()
@@ -154,6 +167,7 @@ def plot_times_between_events(times: dict[float, dict[int, float]], rounds: int)
   plt.ylabel("Frecuencia de eventos (1/s)", fontsize=20)
 
   plt.grid()
+  plt.tight_layout()
   
   plt.savefig("out/mean_freqs_events.png")
   plt.close()
@@ -175,9 +189,10 @@ def plot_event_density(times: dict[float, dict[int, float]], rounds: int):
       events_in_bin = []
 
       for j in range(rounds):
-        # Get the number of events in the current round that are less than or equal to the current bin
-        event_amt = len([t for t in times[y][j] if t <= bins[i] and t > bins[i - 1]])
-        events_in_bin.append(event_amt)
+        if times[y][j] != None: # discard outliers
+          # Get the number of events in the current round that are less than or equal to the current bin
+          event_amt = len([t for t in times[y][j] if t <= bins[i] and t > bins[i - 1]])
+          events_in_bin.append(event_amt)
       
       # Add random events to the data, to populate the bins according to the number of events in each bin
       event_count = int(round(np.mean(events_in_bin), 0))

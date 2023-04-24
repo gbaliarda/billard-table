@@ -38,6 +38,7 @@ whiteBallCoords = [56.0, 56.0]  # cm
 whiteBallVx = 200.0             # cm/s
 ballMass = 165                  # g
 ballDiameter = 5.7              # cm
+verbose = false
 
 [files]
 staticInput = "./static.txt"

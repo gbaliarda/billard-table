@@ -15,5 +15,5 @@ output = "./out/output.txt"
 whiteBallYRange = [ 42, 56,]
 whiteBallVxRange = [ 100, 300,]
 initialPositions = 3
-initialVelocities = 3
-rounds = 5
+initialVelocities = 10
+rounds = 15
